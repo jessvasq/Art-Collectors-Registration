@@ -3,6 +3,7 @@ package com.nvz.art_collectors_registration.config;
 import com.nvz.art_collectors_registration.entity.ArtCollector;
 import com.nvz.art_collectors_registration.entity.Role;
 import com.nvz.art_collectors_registration.repository.ArtCollectorRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private ArtCollectorRepository artCollectorRepository;
+    private final ArtCollectorRepository artCollectorRepository;
 
     // inject repository bean
     public CustomUserDetailsService(ArtCollectorRepository artCollectorRepository) {
@@ -37,8 +38,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     // maps the roles to 'GrantedAuthority' objects
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         // use streams to transform each 'Role' into 'SimpleGrantedAuthority'
-        Collection<? extends GrantedAuthority> authorities = roles.stream().map(role->
-                new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-        return authorities;
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
 }
